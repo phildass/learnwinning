@@ -1,2 +1,1 @@
-# learnwinning
-Live Like a Winner
+# Your Softgen App

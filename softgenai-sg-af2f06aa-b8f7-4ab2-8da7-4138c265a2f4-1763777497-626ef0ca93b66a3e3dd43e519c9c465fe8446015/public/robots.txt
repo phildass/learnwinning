@@ -1,0 +1,16 @@
+
+# Robots.txt for learnwinning.iiskills.in
+
+User-agent: *
+Allow: /
+Allow: /lessons/sample
+Allow: /modules
+Allow: /privacy
+Allow: /terms
+
+Disallow: /admin
+Disallow: /api/
+Disallow: /_next/
+Disallow: /auth/
+
+Sitemap: https://learnwinning.iiskills.in/sitemap.xml

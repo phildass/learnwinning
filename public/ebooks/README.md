@@ -8,7 +8,7 @@ This directory contains the course PDFs:
 ## File Upload Instructions
 
 To upload PDFs to this directory:
-1. Use the Softgen file upload feature in the left sidebar
+1. Use standard file upload methods (FTP, SCP, or direct file system access)
 2. Navigate to `/public/ebooks/`
 3. Upload your PDF files with the exact names above
 

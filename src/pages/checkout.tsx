@@ -37,6 +37,7 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Store registration data for after payment
     localStorage.setItem("pendingRegistration", JSON.stringify({
       fullName: fullName.trim(),
       phoneNumber: phoneNumber.trim(),
@@ -44,14 +45,15 @@ export default function CheckoutPage() {
       timestamp: Date.now()
     }));
 
-    router.push("/payment");
+    // Redirect to external payment gateway
+    window.location.href = "https://aienter.in/payments";
   };
 
   return (
     <>
       <Head>
-        <title>Purchase Course | Live Like a Winner</title>
-        <meta name="description" content="Purchase the full Live Like a Winner course" />
+        <title>Register for Course | Live Like a Winner</title>
+        <meta name="description" content="Register for the full Live Like a Winner course" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -95,17 +97,17 @@ export default function CheckoutPage() {
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <CreditCard className="w-6 h-6 text-primary" />
-                    <CardTitle>Course Purchase</CardTitle>
+                    <CardTitle>Course Registration</CardTitle>
                   </div>
                   <CardDescription>
-                    Enter your details to proceed to payment
+                    Enter your details to proceed to payment gateway
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
                     <AlertCircle className="h-4 w-4 text-amber-600" />
                     <AlertDescription className="text-amber-900 dark:text-amber-100">
-                      Payment is processed via UPI only. No refunds will be issued after payment.
+                      You will be redirected to our secure payment gateway. After successful payment, you will receive an authentication code via email (no-reply@iiskill.in) to access the course.
                     </AlertDescription>
                   </Alert>
 
@@ -136,7 +138,7 @@ export default function CheckoutPage() {
                         required
                       />
                       <p className="text-xs text-muted-foreground">
-                        Include country code (e.g., +91 for India). You will receive a verification code after payment.
+                        Include country code (e.g., +91 for India). Used for course access verification.
                       </p>
                     </div>
 
@@ -160,7 +162,7 @@ export default function CheckoutPage() {
                     <Alert className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
                       <ShieldCheck className="h-4 w-4 text-blue-600" />
                       <AlertDescription className="text-sm">
-                        <strong>Auto-Verification:</strong> Your phone number will be automatically verified after successful payment. You'll receive a verification code to access the course.
+                        <strong>Secure Authentication:</strong> After successful payment, you'll receive a Supabase-authenticated access code via email (no-reply@iiskill.in). Use this code to sign in and access the course.
                       </AlertDescription>
                     </Alert>
 
@@ -170,11 +172,11 @@ export default function CheckoutPage() {
                         <span className="text-2xl font-bold text-primary">₹99</span>
                       </div>
                       <p className="text-xs text-muted-foreground mb-4">
-                        Payment will be made directly to Phil Dass via UPI
+                        Payment processed securely via aienter.in/payments
                       </p>
                       <Button type="submit" className="w-full" size="lg">
                         <ShieldCheck className="w-5 h-5 mr-2" />
-                        Proceed to Payment
+                        Register & Proceed to Payment
                       </Button>
                     </div>
                   </form>

@@ -1,9 +1,9 @@
 
-# Supabase Setup Guide for Learnwinning.iiskills.in
+# Supabase Setup Guide for learn-winning.iiskills.cloud
 
 ## Prerequisites
 - Supabase account (https://supabase.com)
-- Project deployed on Vercel
+- Server access for environment variable configuration
 
 ## Step 1: Create Supabase Project
 
@@ -58,12 +58,9 @@
    - **anon public** key
    - **service_role** key (keep this secret!)
 
-## Step 6: Add Environment Variables to Vercel
+## Step 6: Add Environment Variables
 
-1. Go to your Vercel dashboard
-2. Select your project
-3. Go to **Settings** > **Environment Variables**
-4. Add the following variables:
+Add the following environment variables to your `.env.local` file on the server:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
@@ -71,7 +68,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 ```
 
-5. Redeploy your application
+After updating `.env.local`, restart the application:
+```bash
+pm2 restart learn-winning
+```
 
 ## Step 7: Configure Row Level Security (RLS)
 
@@ -146,9 +146,9 @@ The migration script already includes RLS policies, but verify:
 ### Environment Variable Issues
 
 **Problem**: Supabase not connecting
-- **Solution**: Verify environment variables are set correctly in Vercel
+- **Solution**: Verify environment variables are set correctly in `.env.local`
 - Check that NEXT_PUBLIC_ prefix is used for client-side variables
-- Redeploy after adding variables
+- Restart PM2 process after adding variables: `pm2 restart learn-winning`
 
 ## Support
 

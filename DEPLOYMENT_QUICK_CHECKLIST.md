@@ -1,322 +1,209 @@
-
-# 🚀 DEPLOYMENT QUICK CHECKLIST
-## Learnwinning.iiskills.in
-
-**Use this as your deployment day checklist. Print it out and check boxes as you go.**
+# Quick Deployment Checklist
+## learn-winning.iiskills.cloud
 
 ---
 
-## ⏰ ESTIMATED TIME: 2-25 hours (mostly DNS waiting)
+## 🚀 QUICK START (For Experienced Deployers)
+
+### Prerequisites
+- [ ] Node.js 18.x installed on server
+- [ ] PM2 installed globally
+- [ ] Nginx configured
+- [ ] SSL certificate ready
+- [ ] Supabase project created
 
 ---
 
-## 📋 PHASE 1: PRE-DEPLOYMENT (30 min)
+## 📋 DEPLOYMENT STEPS
 
-### Local Build Test
-- [ ] Run `npm install`
-- [ ] Run `npm run build`
-- [ ] Build completes with NO errors
-- [ ] Run `npm run start`
-- [ ] Site works on localhost:3000
+### 1. Clone and Install
+```bash
+cd /var/www
+git clone https://github.com/phildass/learn-winning.git
+cd learn-winning
+npm install
+```
 
-### File Verification
-- [ ] `public/ebooks/sample-chapter-one.pdf` exists
-- [ ] `public/ebooks/live-like-a-winner-full.pdf` exists
-- [ ] `public/LLAWLOGO.png` exists
-- [ ] `public/winner.png` exists
-- [ ] `public/GooglePay_QR.png` exists
-- [ ] `vercel.json` exists in root
-- [ ] `next.config.mjs` exists in root
+### 2. Environment Configuration
+```bash
+cp .env.example .env.local
+# Edit .env.local with production values
+```
 
-### Git & GitHub
-- [ ] Code committed to git
-- [ ] GitHub repository created
-- [ ] Code pushed to GitHub main branch
-- [ ] Repository is public (or Vercel has access)
+**Required Variables:**
+- `NEXT_PUBLIC_SITE_URL=https://learn-winning.iiskills.cloud`
+- `NEXT_PUBLIC_SUPABASE_URL=...`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY=...`
+- `NEXT_PUBLIC_PAYMENT_URL=https://aienter.in/payments`
+- `NODE_ENV=production`
 
----
+### 3. Build and Start
+```bash
+npm run build
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+```
 
-## 🚀 PHASE 2: VERCEL DEPLOYMENT (15 min)
+### 4. Nginx Configuration
+Create `/etc/nginx/sites-available/learn-winning.iiskills.cloud`:
 
-### Vercel Setup
-- [ ] Signed in to vercel.com
-- [ ] Clicked "Add New Project"
-- [ ] Selected GitHub repository
-- [ ] Imported project
-- [ ] Framework detected as "Next.js"
-- [ ] Build command: `npm run build`
-- [ ] Output directory: `.next`
-- [ ] Clicked "Deploy"
+```nginx
+server {
+    listen 80;
+    server_name learn-winning.iiskills.cloud;
+    return 301 https://$server_name$request_uri;
+}
 
-### Watch Build
-- [ ] Build started successfully
-- [ ] No red error messages in logs
-- [ ] Build completed (✓ Compiled successfully)
-- [ ] Deployment succeeded
-- [ ] Got deployment URL: `https://learnwinning-xxx.vercel.app`
+server {
+    listen 443 ssl http2;
+    server_name learn-winning.iiskills.cloud;
 
-### Test Default URL
-- [ ] Visited Vercel deployment URL
-- [ ] Homepage loads correctly
-- [ ] Images display
-- [ ] Navigation works
-- [ ] Sample lesson loads
+    ssl_certificate /etc/letsencrypt/live/learn-winning.iiskills.cloud/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/learn-winning.iiskills.cloud/privkey.pem;
 
----
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
 
-## 🌐 PHASE 3: DOMAIN SETUP (10 min + waiting)
+Enable and reload:
+```bash
+sudo ln -s /etc/nginx/sites-available/learn-winning.iiskills.cloud /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
-### Add Domain in Vercel
-- [ ] Went to Settings → Domains
-- [ ] Clicked "Add Domain"
-- [ ] Entered: `learnwinning.iiskills.in`
-- [ ] Domain added successfully
-- [ ] Noted DNS instructions
-
-### Configure DNS Records
-Go to your domain provider (GoDaddy, Namecheap, etc.):
-
-- [ ] Added CNAME record:
-  ```
-  Type: CNAME
-  Name: learnwinning
-  Value: cname.vercel-dns.com
-  TTL: 300 (5 minutes)
-  ```
-
-- [ ] Added A record (optional but recommended):
-  ```
-  Type: A
-  Name: learnwinning
-  Value: 76.76.21.21
-  TTL: 300
-  ```
-
-- [ ] Saved DNS changes
-- [ ] Noted time: _____________ (DNS takes 1-24 hours)
+### 5. SSL Certificate
+```bash
+sudo certbot --nginx -d learn-winning.iiskills.cloud
+```
 
 ---
 
-## ⏳ PHASE 4: WAIT FOR DNS (1-24 hours)
+## ✅ VERIFICATION
 
-### Check DNS Propagation
-Visit: https://www.whatsmydns.net
-
-- [ ] Checked after 1 hour: DNS propagating? _______
-- [ ] Checked after 3 hours: DNS propagating? _______
-- [ ] Checked after 6 hours: DNS propagating? _______
-- [ ] DNS fully propagated worldwide
-
-### Verify Domain Works
-- [ ] Visit: https://learnwinning.iiskills.in
-- [ ] Domain resolves correctly
-- [ ] Shows green padlock (SSL active)
-- [ ] No "Not Secure" warning
-- [ ] Homepage loads
-
----
-
-## ✅ PHASE 5: POST-DEPLOYMENT TESTING (30 min)
-
-### Critical Path Tests
-
-#### Test 1: Homepage
-- [ ] Visit: https://learnwinning.iiskills.in
-- [ ] Logo displays correctly
-- [ ] Winner certificate image shows
-- [ ] "Choose Your Learning Path" section visible
-- [ ] Both path cards display correctly
-- [ ] Sample chapter link works
-
-#### Test 2: Sample Lesson
-- [ ] Click "Start the First Chapter/Lesson"
-- [ ] URL is: /lessons/sample
-- [ ] Chapter 1 content loads
-- [ ] All 4 tabs work (Original, Summary, Lesson, Test)
-- [ ] Images in chapter display
-- [ ] Text is readable and formatted
-- [ ] Download PDF button works
-
-#### Test 3: Modules Page
-- [ ] Visit: /modules
-- [ ] All 11 chapters show
-- [ ] 7 chapters marked "Complete" (green)
-- [ ] 4 chapters marked "PDF Available" (blue)
-- [ ] Chapter descriptions visible
-- [ ] "View Chapter" buttons work
-- [ ] Interludes tab shows all 9 interludes
-
-#### Test 4: Checkout Flow
-- [ ] Click "Purchase Full Course"
-- [ ] Checkout form loads
-- [ ] Can enter name, phone, email
-- [ ] Form validation works
-- [ ] "Proceed to Payment" button works
-- [ ] Goes to /payment page
-
-#### Test 5: Payment Page
-- [ ] Payment page loads
-- [ ] QR code displays correctly
-- [ ] Registration details show
-- [ ] Instructions are clear
-- [ ] Link to Sign In page works
-
-#### Test 6: Resources Page
-- [ ] Visit: /resources
-- [ ] Sample chapter download works
-- [ ] PDF downloads successfully
-- [ ] Can open PDF and read it
-
-#### Test 7: Admin Panel
-- [ ] Visit: /admin
-- [ ] Login page displays
-- [ ] Can login with password "admin"
-- [ ] Dashboard loads with sample data
-- [ ] All tabs work (Overview, Users, etc.)
-
-### Mobile Testing
-- [ ] Open on phone browser
-- [ ] Responsive design works
-- [ ] Text is readable
-- [ ] Images scale correctly
-- [ ] Navigation menu works
-- [ ] Can navigate all pages
-- [ ] Checkout form usable on mobile
-
-### Browser Testing
-- [ ] Tested on Chrome
-- [ ] Tested on Firefox
-- [ ] Tested on Safari (if Mac/iPhone)
-- [ ] Tested on Edge
-
-### Performance Check
-- [ ] Open browser DevTools (F12)
-- [ ] Go to Console tab
-- [ ] No red errors showing
-- [ ] Site loads in <3 seconds
-- [ ] Images load properly
-
----
-
-## 🎯 PHASE 6: FINAL VERIFICATION
-
-### Functionality Checklist
-- [ ] All 11 modules accessible
-- [ ] 7 interactive lessons work
-- [ ] 4 chapters show PDF available
-- [ ] PDF downloads work
-- [ ] Checkout → Payment flow complete
-- [ ] QR code payment method clear
-- [ ] Admin panel accessible
-- [ ] No broken links
-- [ ] All images display
-- [ ] Forms work correctly
-
-### SEO & Meta Tags
-- [ ] Right-click page → "View Page Source"
-- [ ] `<title>` tag shows for homepage
-- [ ] Meta description present
-- [ ] Favicon loads (check browser tab)
-
-### Security
-- [ ] URL starts with `https://`
-- [ ] Green padlock in browser
+- [ ] Build completed without errors
+- [ ] PM2 process running: `pm2 status`
+- [ ] Site accessible: https://learn-winning.iiskills.cloud
+- [ ] Landing page loads
+- [ ] Authentication works (admin + user)
+- [ ] Payment redirect to aienter.in/payments works
+- [ ] Course modules accessible
+- [ ] Admin panel at /admin works
+- [ ] PDFs downloadable from /public/ebooks/
 - [ ] SSL certificate valid
-- [ ] No mixed content warnings
+- [ ] Mobile responsive
+- [ ] All 10 modules (100 lessons) accessible
 
 ---
 
-## 🎉 DEPLOYMENT COMPLETE!
+## 🔧 QUICK COMMANDS
 
-### If All Boxes Are Checked:
-✅ **CONGRATULATIONS! Your site is live and working perfectly!**
+### Monitoring
+```bash
+pm2 status                    # Check status
+pm2 logs learn-winning       # View logs
+pm2 monit                    # Monitor resources
+```
 
-### Share the Good News:
-- [ ] Test with 2-3 friends
-- [ ] Monitor for any user-reported issues
-- [ ] Celebrate! 🎉
+### Updates
+```bash
+cd /var/www/learn-winning
+git pull origin main
+npm install
+npm run build
+pm2 restart learn-winning
+```
 
----
+### Troubleshooting
+```bash
+# Rebuild from scratch
+rm -rf .next node_modules
+npm install
+npm run build
+pm2 restart learn-winning
 
-## ❌ IF SOMETHING DIDN'T WORK
+# Check logs
+pm2 logs learn-winning --lines 100
+sudo tail -f /var/log/nginx/error.log
 
-### First, Don't Panic! Check:
-
-1. **Build Failed?**
-   - Check Vercel deployment logs
-   - Run `npm run build` locally
-   - Look for specific error messages
-   - See DEPLOYMENT_COMPLETE_GUIDE.md Section "Troubleshooting"
-
-2. **Domain Not Working?**
-   - Check DNS records are correct
-   - Use whatsmydns.net to verify propagation
-   - Wait 24 hours (DNS can be slow)
-   - Use Vercel's default URL in meantime
-
-3. **Pages Show 404?**
-   - Clear browser cache (Ctrl+Shift+R)
-   - Check files exist in GitHub repo
-   - Redeploy from Vercel dashboard
-
-4. **Images Not Loading?**
-   - Verify files in `public/` folder
-   - Check file names match exactly (case-sensitive)
-   - Commit and push images to GitHub
-   - Redeploy
-
-5. **Still Stuck?**
-   - Read DEPLOYMENT_COMPLETE_GUIDE.md
-   - Contact Vercel Support (very helpful!)
-   - Email: support@iiskills.in
+# Restart services
+pm2 restart learn-winning
+sudo systemctl restart nginx
+```
 
 ---
 
-## 📞 EMERGENCY CONTACTS
+## 🗂️ FILE STRUCTURE CHECK
 
-- **Vercel Support:** https://vercel.com/support
-- **Next.js Docs:** https://nextjs.org/docs/deployment
-- **Project Support:** support@iiskills.in
-
----
-
-## 📝 DEPLOYMENT NOTES
-
-**Date Started:** _______________
-**Date DNS Configured:** _______________
-**Date DNS Propagated:** _______________
-**Date Fully Live:** _______________
-
-**Issues Encountered:**
-_____________________________________
-_____________________________________
-_____________________________________
-
-**Solutions Applied:**
-_____________________________________
-_____________________________________
-_____________________________________
-
-**Final Deployment URL:** https://learnwinning.iiskills.in
-
-**Vercel Project URL:** https://vercel.com/dashboard (save this!)
+Ensure these critical files exist:
+```
+/var/www/learn-winning/
+├── src/                          # Source code
+├── public/
+│   └── ebooks/
+│       ├── sample-chapter-one.pdf
+│       └── live-like-a-winner-full.pdf
+├── .env.local                    # Environment variables (create this)
+├── package.json
+├── next.config.mjs
+├── ecosystem.config.js           # PM2 configuration
+└── .next/                        # Build output (after npm run build)
+```
 
 ---
 
-## ✅ SUCCESS! 
+## 🔐 SECURITY CHECKLIST
 
-**You did it! Your site is now live.** 🚀
-
-All 11 modules are ready and accessible:
-- ✅ 7 chapters with full interactive lessons
-- ✅ 4 chapters available in PDF
-- ✅ Complete checkout and payment flow
-- ✅ Admin panel for management
-- ✅ Mobile responsive
-- ✅ Fast and secure
-
-**Now you can focus on getting users and growing your course!**
+- [ ] `.env.local` has correct permissions (600)
+- [ ] SSL certificate installed and valid
+- [ ] Supabase RLS policies configured
+- [ ] Admin dashboard protected by Supabase auth
+- [ ] No sensitive data in Git repository
+- [ ] Firewall configured correctly
+- [ ] PM2 logs rotation configured
 
 ---
 
-*Print this checklist and keep it for reference. Good luck with your launch!* 🎯
+## 📊 PRODUCTION URLS
+
+| Resource | URL |
+|----------|-----|
+| Main Site | https://learn-winning.iiskills.cloud |
+| Admin Panel | https://learn-winning.iiskills.cloud/admin |
+| Sample Lesson | https://learn-winning.iiskills.cloud/lessons/sample |
+| Resources | https://learn-winning.iiskills.cloud/resources |
+| Payment Gateway | https://aienter.in/payments |
+
+---
+
+## 🆘 QUICK TROUBLESHOOTING
+
+| Issue | Solution |
+|-------|----------|
+| Build fails | `rm -rf .next node_modules && npm install && npm run build` |
+| Process won't start | Check `pm2 logs learn-winning` for errors |
+| Site not accessible | Check Nginx config: `sudo nginx -t` |
+| 502 Bad Gateway | Check PM2 process is running: `pm2 status` |
+| SSL issues | Renew certificate: `sudo certbot renew` |
+| Database connection | Verify Supabase credentials in `.env.local` |
+
+---
+
+## 📞 SUPPORT
+
+- Email: support@iiskills.in
+- Logs: `pm2 logs learn-winning`
+- Nginx logs: `sudo tail -f /var/log/nginx/error.log`
+
+---
+
+**Deployment Pattern:** iiskills.cloud subdomain (PM2 + Nginx)
+**Last Updated:** January 2026

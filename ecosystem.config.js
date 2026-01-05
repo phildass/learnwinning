@@ -1,8 +1,14 @@
 module.exports = {
   apps: [{
-    name: 'nextjs',
+    name: 'learn-winning',
     script: 'npm',
-    args: 'run dev',
+    args: 'start',
     autorestart: true,
+    watch: false,
+    max_memory_restart: '1G',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    }
   }]
 };

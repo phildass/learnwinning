@@ -139,7 +139,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 Before deploying to production:
 1. Add your production domain to authorized domains in Firebase Console
-2. Ensure all environment variables are set in Vercel
+2. Ensure all environment variables are set in `.env.local` on server
 3. Test phone authentication thoroughly
 4. Monitor Firebase Usage & Billing
 

@@ -137,23 +137,49 @@ According to the problem statement, the following features are mentioned but not
 **Current State**: 
 - ✅ Environment variables configured for email
 - ❌ Actual email sending not implemented
+- ❌ Payment webhook receiver not implemented
 **Implementation Notes**:
 - Implement email service (SendGrid, AWS SES, or SMTP)
 - Send welcome email with access code after payment confirmation
-- Integrate with payment webhook from aienter.in/payments
+- **CRITICAL**: Implement webhook receiver for payment confirmation from aienter.in/payments
+  - The checkout page stores registration data in localStorage and redirects to external gateway
+  - Need webhook endpoint (e.g., `/api/payment-webhook`) to receive payment confirmation
+  - Webhook should:
+    1. Verify payment authenticity (signature/token)
+    2. Create user account in Supabase
+    3. Mark payment complete
+    4. Send access code via email
+    5. Return success/failure to payment gateway
 - Create email templates
+- Ensure `markPaymentComplete` in `supabaseAuthService.ts` is only called after payment verification
 
 ## Recommendations for Next Steps
+
+### Code Review Findings
+
+#### Security & Data Integrity Issues Identified
+1. **Payment Verification Gap**: The `markPaymentComplete` method in `supabaseAuthService.ts` should only be called after verified payment confirmation via webhook from aienter.in/payments. Currently no verification mechanism exists.
+   
+2. **Database Consistency**: The `user_progress` table has potential data consistency issues between `current_chapter` and `completed_chapters` array. Consider adding:
+   - Database triggers to validate consistency
+   - Application-level validation before updates
+   - Or restructure to derive `current_chapter` from `completed_chapters` array
+
+3. **Payment Data Flow**: Registration data is stored in localStorage before redirect to external payment gateway. This data could be lost if user clears browser. Webhook integration is critical for proper user activation.
 
 ### Priority 1 (Security & Authentication)
 1. Implement Supabase authentication for admin panel
 2. Add password change functionality for admins
 3. Replace mock data with real Supabase queries
 
-### Priority 2 (Payment Integration)
-1. Set up webhook receiver for payment confirmation from aienter.in/payments
+### Priority 2 (Payment Integration) - CRITICAL
+1. **Set up webhook receiver for payment confirmation from aienter.in/payments**
+   - Create `/api/payment-webhook` endpoint
+   - Implement payment signature verification
+   - Only call `markPaymentComplete` after verified payment
 2. Implement email sending for access codes
 3. Automate user activation upon payment confirmation
+4. Address security concern: ensure payment verification before granting access
 
 ### Priority 3 (User Experience)
 1. Add Living Wave Tracker to user dashboard

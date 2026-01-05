@@ -188,7 +188,7 @@ export default function Home() {
                   variant="outline" 
                   className="w-full sm:w-auto text-lg px-8 py-6 group border-2 border-brand-teal hover:bg-brand-teal/10 hover:border-brand-teal-dark shadow-lg hover:shadow-xl transition-all"
                 >
-                  I Want to Do the Full Course
+                  Register for the Full Course
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
